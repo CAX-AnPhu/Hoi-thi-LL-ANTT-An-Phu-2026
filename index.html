@@ -102,7 +102,13 @@
                 <button id="btn-truoc" onclick="chuyenTrang(-1)" style="display: none;">⬅ Trang Trước</button>
                 <button id="btn-sau" onclick="chuyenTrang(1)" style="display: none;">Trang Tiếp ➡</button>
             </div>
-
+            <!-- BẮT ĐẦU: ĐOẠN CODE PHẦN TỰ LUẬN THÊM MỚI -->
+            <div id="phan-tu-luan" style="display: none; margin-bottom: 20px; padding: 20px; background: #fff8e1; border-left: 5px solid #f1c40f; border-radius: 5px;">
+                <h3 style="text-align: left; margin-top: 0; color: #d35400;">Phần thi Tự luận:</h3>
+                <label style="font-weight: bold; margin-bottom: 10px; display: block;">Câu hỏi: Đồng chí cho biết khi tiếp nhận thông tin trên địa bàn thôn đang xảy ra vụ việc Ông Nguyễn Văn A có sử dụng búa để đập phá tường rào do em ruột Nguyễn Văn B xây dựng ở phần đất liền kề do cha mẹ để lại; hai bên gia đình đang gây ồn ào mất ANTT và có khả năng sử dụng các vũ khi thô sơ để giải quyết mâu thuẫn trên. Trước tình hình vụ việc trên; các đồng chí hay nêu cách thức, phương pháp và phương án xử lý tình huống trên? (các đồng chí trình bày viết ngắn gọn, xúc tích, xử lý tình huống sát với tình hình thực tế).</label>
+                <textarea id="cau-tra-loi-tu-luan" rows="5" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 16px; font-family: inherit;" placeholder="Nhập câu trả lời của bạn vào đây..."></textarea>
+            </div>
+            <!-- KẾT THÚC: ĐOẠN CODE PHẦN TỰ LUẬN -->
             <button onclick="nopBai(false)" id="nut-nop-bai">NỘP BÀI</button>
         </div>
 
@@ -297,6 +303,14 @@
             let tongSoTrang = Math.ceil(danhSachCauHoiThi.length / soCauMoiTrang);
             document.getElementById("btn-truoc").style.display = trangHienTai === 0 ? "none" : "block";
             document.getElementById("btn-sau").style.display = trangHienTai === tongSoTrang - 1 ? "none" : "block";
+            
+            // Xử lý hiển thị phần tự luận ở trang cuối cùng
+            let phanTuLuan = document.getElementById("phan-tu-luan");
+            if (trangHienTai === tongSoTrang - 1) {
+                phanTuLuan.style.display = "block";
+            } else {
+                phanTuLuan.style.display = "none";
+            }
         }
 
         function batDauDongHo() {
@@ -391,6 +405,13 @@
             let chuoiCanhBao = soLanViPham > 0 ? `Tổng: ${soLanViPham} lần.\n${danhSachViPham.join("\n")}` : "Không vi phạm";
             let chuoiCauSai = danhSachSai.length > 0 ? danhSachSai.join("\n\n") : "Tuyệt vời, không sai câu nào!";
 
+            // Lấy dữ liệu thí sinh nhập vào ô tự luận
+            let baiLamTuLuan = document.getElementById("cau-tra-loi-tu-luan").value.trim();
+            if (baiLamTuLuan === "") {
+                baiLamTuLuan = "Không trả lời";
+            }
+
+            // Gói dữ liệu gửi đi (Đã thêm trường tuLuan)
             let duLieuGoiDi = {
                 thoiGianBatDau: thoiGianBatDauStr,
                 hoTen: document.getElementById("hoTen").value,
@@ -398,14 +419,15 @@
                 diem: diemChinhThuc,
                 thoiGianHoanThanh: thoiGianLamBaiStr,
                 chiTietCanhBao: chuoiCanhBao,
-                danhSachSai: chuoiCauSai
+                danhSachSai: chuoiCauSai,
+                tuLuan: baiLamTuLuan // <--- Biến mới thêm vào đây
             };
 
             document.getElementById("man-hinh-thi").style.display = "none";
             document.getElementById("man-hinh-ket-qua").style.display = "block";
             document.getElementById("diem-so").innerText = `${diemChinhThuc} Điểm`;
 
-            let linkGoogleSheet = "https://script.google.com/macros/s/AKfycbxEbiQNKbDNLCJNie2QqBAOtVdyzuedMGGooMSvBobfLHGIZpXYLKBncwc8Ix6WTRkc/exec";
+            let linkGoogleSheet = "https://script.google.com/macros/s/AKfycbxMc5a18dYsXu13uBTbSPRUka03CxjsI05HEzcP8IEi4dRblBuwI96E9SjsyxZxYKtm/exec";
 
             fetch(linkGoogleSheet, {
                 method: "POST",
